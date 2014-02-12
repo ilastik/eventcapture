@@ -89,7 +89,7 @@ def get_fully_qualified_name(obj):
 class NamedObjectNotFoundError(Exception):
     pass
 
-def get_named_object(full_name, timeout=5.0):
+def get_named_object(full_name, timeout=10.0):
     """
     Locate the object with the given fully qualified name.
     While searching for the object, actively **rename** any objects that do not have unique names within their parent.
