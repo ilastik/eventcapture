@@ -3,7 +3,7 @@ import sys
 import datetime
 
 from PyQt4 import uic
-from PyQt4.QtCore import Qt, QSettings, QString
+from PyQt4.QtCore import Qt, QSettings, QString, QEvent
 from PyQt4.QtGui import QApplication, QWidget, QIcon, QFileDialog, QMessageBox
 
 from eventcapture.eventRecorder import EventRecorder
@@ -166,5 +166,20 @@ class EventRecorderGui(QWidget):
                 self._onPause(True)
         elif not new_is_descendent and old_is_descendent:
             # This is a focus-out change
+            if self._autopaused and self._recorder.paused:
+                self._onPause(False)
+
+    def changeEvent(self, event):
+        """
+        Overridden from QWidget.
+        Apparently the _onFocusChanged handler above doesn't work in all cases.
+        In some cases, I can activate the main window but the keyboard focus remains 
+        with the recorder gui, which means the recorder is not unpaused at the right time.
+        By watching for change events, we ensure that the recorder is unpaused correctly.
+        
+        TODO: Perhaps we can just get rid of the focusChanged signal handler and just watch for changeEvents.
+        """
+        super( EventRecorderGui, self ).changeEvent(event)
+        if event.type() == QEvent.ActivationChange and not self.isActiveWindow():
             if self._autopaused and self._recorder.paused:
                 self._onPause(False)
