@@ -48,6 +48,9 @@ class EventPlayer(object):
         else:
             self._comment_display = comment_display
 
+    def getNamedObject(self, widget_name):
+        return get_named_object(widget_name)
+    
     def play_script(self, path, finish_callback=None):
         """
         Start execution of the given script in a separate thread and return immediately.
